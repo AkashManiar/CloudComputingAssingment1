@@ -7,8 +7,8 @@ import {
     updatePart
 } from "../controllers/jobs.controller"
 
-let router = Router()
-let jsonParser = bodyParser.json()
+const router = Router()
+const jsonParser = bodyParser.json()
 
 router.get('/API446/jobs', getJobs)
 router.get('/API446/quantity/*', getQuantity)

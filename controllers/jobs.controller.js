@@ -1,9 +1,18 @@
 import { jobs446 } from "../data"
+import { Jobs } from "../models/Jobs"
 
-let jobsController = {
+const jobsController = {
 
     getJobs: (req, res) => {
-        res.json({success: true, jobs: jobs446}) 
+        Jobs.findAll({
+            attributes: ['jobName', 'partId', 'qty']
+        }).then(
+            jobs => {
+                res.json({success: true, jobs})
+            }
+        ).catch(err => {
+            res.json({success: false, code: err.original.code, message: "Jobs table does not exists, please add data to 'Jobs' table first"})
+        })
     },
 
     getJobIndex: (job_name, part_id) => {
@@ -22,40 +31,75 @@ let jobsController = {
     getQuantity: (req,res) => {
         let job_name = req.query.jobName
         let part_id = req.query.partId
-        if (getJobIndex(job_name, part_id) != -1) {
-            res.json({success: true, message: "Successfully found a job", job: job})
+        
+        if (job_name && part_id) {
+            const query = {'jobName': job_name, "partId": part_id}
+            
+            Jobs.findOne({
+                where: query
+            }).then(jobs => {
+                if (jobs) {
+                    res.json({success: true, jobs})
+                }
+            }).catch(err2 => {
+                res.json({ success: false, code: err.original.code, message: "Error in finding record" })
+            })
         } else {
-            res.json({success: false, message: "Sorry no matching job is found!"})
-        } 
+            res.json({success: false, message: "Oops! some error with updating data"}) 
+        }
     },
     
     addPart: (req, res) => {
         if (req.body != {} && !!req.body) {
-            if (jobsController.getJobIndex(req.body.job_name, req.body.part_id) == -1) {
-                let obj = {
-                    jobName: req.body.job_name,
-                    partId: req.body.part_id,
-                    qty: req.body.quantity
+            const query = {'jobName': req.body.job_name, "partId": req.body.part_id}
+
+            Jobs.findAll({
+                where: query,
+            }).then(
+                jobs => {
+                    if (jobs.length == 0) {
+                        query.qty = req.body.quantity 
+                        Jobs.create(query)
+                            .then(data => {
+                                res.json({success: true, message: "Successfully added your job to database"})
+                            }).catch(err1 => {
+                                res.json({ success: false, code: err.original.code, message: "Error in adding data" })  
+                            })
+                    } else {
+                        res.json({success: false, message: "Provided data already exist in database"})
+                    }
                 }
-                jobs446.push(obj)
-                res.json({success: true, message: "Successfully added the job, call /API446/jobs to view your newly added job."})
-            } else {
-                res.json({success: false, message: "Job with provided data already exists" })
-            }
+            ).catch(err => {
+                res.json({ success: false, code: err.original.code, message: "Error in finding data" })
+            })
         } else {
             res.json({success: false, message: "Oops! some error with adding data"})
         }
     },
 
     updatePart: (req, res) => {
+    
         if (req.body != {} && !!req.body && req.body.job_name && req.body.part_id) {
-            let jobIndex = jobsController.getJobIndex(req.body.job_name, req.body.part_id)
-            if (jobIndex != -1) {
-                jobs446[jobIndex] = req.body
-                res.json({success: true, message: "Successfully updated your job"})
-            } else {
-                res.json({success: false, message: "Job with provided data does not exists"})
-            }
+            const query = {'jobName': req.body.job_name, "partId": req.body.part_id}
+            
+            Jobs.findOne({
+                where: query
+            }).then(job => {
+                if (job) {
+                    console.log('HERE!!');
+                    query.qty = req.body.quantity
+                    job.update(
+                        { qty: req.body.quantity },
+                        { where: query }
+                    ).then(t =>
+                        res.json({ success: true, message: "Successfully updated jobs record" })
+                    ).catch(err => {
+                        res.json({ success: false, code: err.original.code, message: "Error in updating record" })
+                    })
+                }
+            }).catch(err2 => {
+                res.json({ success: false, code: err.original.code, message: "Error in finding record" })
+            })
         } else {
             res.json({success: false, message: "Oops! some error with updating data"}) 
         }

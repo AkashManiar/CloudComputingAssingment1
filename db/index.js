@@ -1,17 +1,14 @@
+import { Sequelize } from "sequelize"
 import cred from "./credentials"
-import mysql from "mysql"
 
-let connection = mysql.createConnection({
-    host: cred.host,
-    user: cred.host,
-    password: cred.password
+
+export const db = new Sequelize("CloudComputing_A1", "root", "", {
+    dialect: "mysql",
+    host: "127.0.0.1",
+    logging: false
 })
 
-let connectMySQL = connection.connect(err => {
-    if(err) {
-        console.log('Error occurred');
-        throw err
-    } else {
-        console.log('Connection successful!');
-    }
-})
+export const connectDB = db.authenticate()
+    .then(() => console.log('Database connected..'))
+    .catch(err => console.log('Error occurred', err))
+
