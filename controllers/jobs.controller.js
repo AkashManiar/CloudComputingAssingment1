@@ -11,7 +11,9 @@ const jobsController = {
                 res.json({success: true, jobs})
             }
         ).catch(err => {
-            console.log("Error is", err)
+            console.log("-------------------------------------------")
+            console.log(err)
+            console.log("-------------------------------------------")
             res.json({success: false, code: err.original.code, message: "Jobs table does not exists, please add data to 'Jobs' table first"})
         })
     },
