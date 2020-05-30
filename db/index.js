@@ -2,9 +2,9 @@ import { Sequelize } from "sequelize"
 import cred from "./credentials"
 
 
-export const db = new Sequelize("CloudComputing_A1", "root", "", {
+export const db = new Sequelize("A3_CloudComputing", "admin", "?A8Ps[<=", {
     dialect: "mysql",
-    host: "127.0.0.1",
+    host: "db-cloud-computing.cu5vlmpnkcu5.us-east-1.rds.amazonaws.com",
     logging: false
 })
 
