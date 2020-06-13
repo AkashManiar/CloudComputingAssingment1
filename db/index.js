@@ -2,9 +2,9 @@ import { Sequelize } from "sequelize"
 import cred from "./credentials"
 
 
-export const db = new Sequelize("A4_Cloud_Computing", "akashAdmin@azure-db-cloud-a4", "?A8Ps[<=", {
+export const db = new Sequelize("A4_Cloud_Computing", "akash-admin@db-cloud-computing", "Pass9988!", {
     dialect: "mysql",
-    host: "azure-db-cloud-a4.mysql.database.azure.com",
+    host: "db-cloud-computing.mysql.database.azure.com",
     logging: false
 })
 
